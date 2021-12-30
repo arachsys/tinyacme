@@ -47,10 +47,13 @@ func main() {
     go server.ServeTLS(listener, "", "")
   }
 
+  status := 0
   for _, name := range os.Args[1:] {
     url := fmt.Sprintf("https://%s/", name)
     if _, err := http.Get(url); err != nil {
-      die(1, "Failed sanity check for %s", url)
+      fmt.Fprintf(os.Stderr, "Failed sanity check for %s\n", url)
+      status = 1
     }
   }
+  os.Exit(status)
 }

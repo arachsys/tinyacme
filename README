@@ -1,5 +1,8 @@
+ACME utilities
+==============
+
 tinyacme
-========
+--------
 
 This is a trivial Go wrapper around the net/http and x/crypto/acme packages,
 primarily intended for provisioning TLS certificates for non-web services.
@@ -23,12 +26,41 @@ On subsequent invocations, tinyacme will first validate existing certificate
 files and only renew them if they are invalid or within 30 days of expiry.
 
 
+acmeproxy
+---------
+
+This extends tinyacme into an https-to-http reverse proxy suitable for TLS
+termination. It resolves the hostnames given as command-line arguments and
+listens for https connections on the resulting addresses, obtaining TLS
+certificates as required. Once running, inbound requests are proxied to the
+non-TLS http service on the same local address and hostname.
+
+An X-Forwarded-For: header is added to every request; if one is already
+present, the client address is appended to the existing chain. Inbound
+HTTP/2 connections are supported as well as HTTP/1.1.
+
+As with tinyacme, certificates are cached in the current directory and will
+be renewed 30 days from expiry. This happens transparently during normal
+operation and does not require a restart or other intervention.
+
+Certificate-provisioning, TLS or HTTP proxy errors are logged to stdout
+while the proxy runs, but successfully proxied requests are silent. Fatal
+errors on startup are reported to stderr and result in a non-zero exit
+status as with tinyacme.
+
+On receipt of SIGTERM, SIGHUP or SIGINT, the proxy stops accepting new
+connections, waits for outstanding requests to complete, then gracefully
+exits.
+
+
 Building and installing
 -----------------------
 
-To build tinyacme, run 'go build' in the source tree. To install it, copy
-the binary into a directory on your path. It should compile and run on any
-platform with Go 1.17 or later.
+To build tinyacme, run 'go build tinyacme.go' in the source tree. To build
+acmeproxy, run 'go build acmeproxy.go'. To install the binaries, copy them
+into a directory on your path. They should compile and run on any platform
+with Go 1.17 or later. Static binaries independent of the host libc can be
+built with the '-tags netgo' go build option.
 
 Please report any problems or bugs to Chris Webb <chris@arachsys.com>.
 
@@ -36,5 +68,5 @@ Please report any problems or bugs to Chris Webb <chris@arachsys.com>.
 Copying
 -------
 
-tinyacme was written by Chris Webb <chris@arachsys.com> and is distributed
-as Free Software under the terms of the MIT license in COPYING.
+These utilities were written by Chris Webb <chris@arachsys.com> and are
+distributed as Free Software under the terms of the MIT license in COPYING.

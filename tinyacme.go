@@ -1,5 +1,6 @@
 package main
 
+import "golang.org/x/crypto/acme"
 import "golang.org/x/crypto/acme/autocert"
 import "fmt"
 import "log"
@@ -26,6 +27,12 @@ func main() {
   server := &http.Server {
     ErrorLog: log.New(os.Stderr, "", 0),
     TLSConfig: manager.TLSConfig(),
+  }
+
+  if url := os.Getenv("ACMEURL"); url != "" {
+    manager.Client = &acme.Client {
+      DirectoryURL: url,
+    }
   }
 
   hosts := make(map[string]string)

@@ -6,8 +6,13 @@ primarily intended for provisioning TLS certificates for non-web services.
 
 Given a list of hostnames as command-line arguments, it resolves them to a
 complete set of IPv4 and IPv6 addresses, binds to every address on the https
-port tcp/443, then obtains TLS certificates from Let's Encrypt by responding
-to TLS-ALPN-01 challenges.
+port tcp/443, then obtains TLS certificates from an ACME-based provider by
+responding to TLS-ALPN-01 challenges.
+
+The ACME endpoint can be specified using the ACMEURL environment variable.
+If this is unset, the Let's Encrypt ACME v2 service is used by default:
+
+  https://acme-v02.api.letsencrypt.org/directory
 
 If any of the addresses is in use or not local, tinyacme will die with an
 error before any certificates are ordered. Otherwise, for each hostname, a

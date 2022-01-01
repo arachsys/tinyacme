@@ -53,11 +53,30 @@ connections, waits for outstanding requests to complete, then gracefully
 exits.
 
 
+acmefront
+---------
+
+This is a variant of acmeproxy which listens for both http and https
+requests, intended as a complete (if somewhat opinionated) web front-end.
+
+Inbound http requests receive a 301 Moved Permanently response, redirecting
+them to the corresponding https URL.
+
+Inbound https requests are proxied to the local http socket specified as
+the first argument, before the list of hostnames. The socket address should
+be a path to a unix socket containing at least one '/', or a TCP address in
+the form HOSTNAME:PORT, IPv4:PORT or [IPv6]:PORT.
+
+The Host: header is passed through acmefront unmodified, so a single target
+web service can dispatch on it to deliver multiple virtual services in the
+traditional way.
+
+
 Building and installing
 -----------------------
 
-To build tinyacme, run 'go build tinyacme.go' in the source tree. To build
-acmeproxy, run 'go build acmeproxy.go'. To install the binaries, copy them
+To build binaries, run 'go build tinyacme.go', 'go build acmeproxy.go' and
+'go build acmefront.go' in the source tree. To install, copy these binaries
 into a directory on your path. They should compile and run on any platform
 with Go 1.17 or later. Static binaries independent of the host libc can be
 built with the '-tags netgo' go build option.

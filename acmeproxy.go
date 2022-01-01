@@ -46,14 +46,14 @@ func main() {
     TLSConfig: manager.TLSConfig(),
   }
 
-  terminate := make(chan os.Signal, 1)
-  signal.Notify(terminate, syscall.SIGHUP, syscall.SIGINT, syscall.SIGTERM)
-
   if url := os.Getenv("ACMEURL"); url != "" {
     manager.Client = &acme.Client {
       DirectoryURL: url,
     }
   }
+
+  terminate := make(chan os.Signal, 1)
+  signal.Notify(terminate, syscall.SIGHUP, syscall.SIGINT, syscall.SIGTERM)
 
   hosts := make(map[string]string)
   for _, name := range os.Args[1:] {

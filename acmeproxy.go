@@ -20,7 +20,7 @@ func die(status int, format string, args ...interface {}) {
 
 func main() {
   if len(os.Args) < 2 {
-    die(64, "Usage: %s HOSTNAME...\n", os.Args[0])
+    die(64, "Usage: %s HOSTNAME...", os.Args[0])
   }
 
   manager := &autocert.Manager {

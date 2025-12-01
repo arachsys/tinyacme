@@ -3,6 +3,7 @@ package main
 import "golang.org/x/crypto/acme"
 import "golang.org/x/crypto/acme/autocert"
 import "context"
+import "crypto/tls"
 import "fmt"
 import "log"
 import "net"
@@ -13,6 +14,7 @@ import "os/signal"
 import "strings"
 import "sync"
 import "syscall"
+import "time"
 
 func die(status int, format string, args ...interface {}) {
   fmt.Fprintf(os.Stderr, format + "\n", args...)
@@ -114,6 +116,18 @@ func main() {
     }
     go http.Serve(listener, http.HandlerFunc(redirect))
   }
+
+  go func() {
+    for {
+      for _, name := range os.Args[2:] {
+        conn, err := tls.Dial("tcp", fmt.Sprintf("%s:443", name), nil)
+        if err == nil {
+          conn.Close()
+        }
+      }
+      time.Sleep(24 * time.Hour)
+    }
+  }()
 
   <-terminate
   server.Shutdown(context.Background())

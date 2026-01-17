@@ -70,7 +70,7 @@ func main() {
 
   wait := new(sync.WaitGroup)
   for host := range hosts {
-    listener, err := net.Listen("tcp", net.JoinHostPort(host, "https"))
+    listener, err := net.Listen("tcp", net.JoinHostPort(host, "443"))
     if err != nil {
       server.Shutdown(context.Background())
       wait.Wait()
@@ -86,7 +86,7 @@ func main() {
   go func() {
     for {
       for _, name := range os.Args[1:] {
-        conn, err := tls.Dial("tcp", fmt.Sprintf("%s:443", name), nil)
+        conn, err := tls.Dial("tcp", net.JoinHostPort(name, "443"), nil)
         if err == nil {
           conn.Close()
         }

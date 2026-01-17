@@ -2,6 +2,7 @@ package main
 
 import "golang.org/x/crypto/acme"
 import "golang.org/x/crypto/acme/autocert"
+import "crypto/tls"
 import "fmt"
 import "log"
 import "net"
@@ -56,10 +57,12 @@ func main() {
 
   status := 0
   for _, name := range os.Args[1:] {
-    url := fmt.Sprintf("https://%s/", name)
-    if _, err := http.Get(url); err != nil {
-      fmt.Fprintf(os.Stderr, "Failed sanity check for %s\n", url)
+    conn, err := tls.Dial("tcp", net.JoinHostPort(name, "443"), nil)
+    if err != nil {
+      fmt.Fprintf(os.Stderr, "Failed sanity check for %s\n", name)
       status = 1
+    } else {
+      conn.Close()
     }
   }
   os.Exit(status)
